@@ -34,8 +34,9 @@ export default {
         } else {
           delRemember();
         }
-        // 跳转回首页
-        router.push("/");
+        // 跳转回首页/跳转退出登录前的页面
+        // console.log(router.currentRoute);
+        router.push(router.currentRoute.query.redirect || "/");
         Message.success("登录成功.");
       } catch (err) {
         if (err.response.data) {
