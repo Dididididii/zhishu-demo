@@ -1,4 +1,4 @@
-import request from '@/utils/request'
+import request from "@/utils/request";
 
 // 登录函数
 /**
@@ -8,8 +8,8 @@ import request from '@/utils/request'
  */
 export function loginAPI(data) {
   return request({
-    url: '/park/login',
-    method: 'POST',
-    data
-  })
+    url: "/park/login",
+    method: "POST",
+    data,
+  });
 }

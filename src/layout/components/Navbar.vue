@@ -8,10 +8,10 @@
         </div>
         <el-dropdown-menu slot="dropdown" class="user-dropdown">
           <router-link to="/">
-            <el-dropdown-item> 首页 </el-dropdown-item>
+            <el-dropdown-item>首页</el-dropdown-item>
           </router-link>
           <a target="_blank">
-            <el-dropdown-item> 项目地址 </el-dropdown-item>
+            <el-dropdown-item>项目地址</el-dropdown-item>
           </a>
           <el-dropdown-item divided @click.native="logout">
             <span style="display: block">退出登录</span>
@@ -23,10 +23,14 @@
 </template>
 
 <script>
+// 导入清除token的方法
+import { removeToken } from '@/utils/auth'
 export default {
   methods: {
     // 退出登录
     logout() {
+      removeToken()
+      this.$store.commit('user/updateToken', '')
       this.$router.push(`/login?redirect=${this.$route.fullPath}`)
     }
   }
@@ -113,7 +117,7 @@ export default {
       .avatar-wrapper {
         margin-top: 5px;
         position: relative;
-        .name{
+        .name {
           font-weight: 600;
           cursor: pointer;
         }
