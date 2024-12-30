@@ -1,6 +1,8 @@
 import axios from "axios";
 // 导入store
 import store from "@/store";
+// 导入消息提示组件
+import { Message } from "element-ui";
 
 const service = axios.create({
   baseURL: "https://api-hmzs.itheima.net/v1",
@@ -26,6 +28,11 @@ service.interceptors.response.use(
     return response.data;
   },
   (error) => {
+    if (error.response.data) {
+      Message.error(error.response.data.msg);
+    } else {
+      Message.error("网络异常,请稍后再试.");
+    }
     return Promise.reject(error);
   }
 );
