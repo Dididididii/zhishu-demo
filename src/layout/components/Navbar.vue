@@ -1,6 +1,11 @@
 <template>
   <div class="navbar">
     <div class="right-menu">
+      <el-button
+        plain
+        size="small"
+        style="margin-right: 20px; text-shadow: none; border: 1px solid rgb(112, 148, 255); color: rgb(112, 148, 255); background: rgb(244, 246, 248); font-size: 14px;"
+      >可视化大屏</el-button>
       <el-dropdown class="avatar-container" trigger="click">
         <div class="avatar-wrapper">
           <!-- 用户名称 -->
@@ -119,6 +124,7 @@ export default {
         position: relative;
         .name {
           font-weight: 600;
+          color: #000;
           cursor: pointer;
         }
       }
