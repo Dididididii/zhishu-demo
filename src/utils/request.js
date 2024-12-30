@@ -3,6 +3,7 @@ import axios from "axios";
 import store from "@/store";
 // 导入消息提示组件
 import { Message } from "element-ui";
+import router from "@/router";
 
 const service = axios.create({
   baseURL: "https://api-hmzs.itheima.net/v1",
@@ -28,6 +29,16 @@ service.interceptors.response.use(
     return response.data;
   },
   (error) => {
+    // 401token失效处理
+    if (error.response.status === 401) {
+      // 跳转到登录页
+      router.push("/login");
+      // 清除token
+      store.commit("user/updateToken", "");
+      Message.warning("登录已过期,请重新登录.");
+      return Promise.reject(error);
+    }
+
     if (error.response.data) {
       Message.error(error.response.data.msg);
     } else {
