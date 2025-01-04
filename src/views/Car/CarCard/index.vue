@@ -21,7 +21,7 @@
     <div class="table">
       <el-table style="width: 100%" :data="carList" :highlight-selection-row="true">
         <el-table-column type="selection" width="55" />
-        <el-table-column type="index" label="序号" />
+        <el-table-column type="index" label="序号" :index="indexMethod" />
         <el-table-column label="车主名称" prop="personName" />
         <el-table-column label="联系方式" prop="phoneNumber" />
         <el-table-column label="车牌号码" prop="carNumber" />
@@ -42,7 +42,7 @@
     <div class="page-container">
       <el-pagination
         :current-page="params.page"
-        :page-sizes="[10, 20, 30, 40]"
+        :page-sizes="[2, 4, 6, 8]"
         :page-size="params.pageSize"
         layout="total, sizes, prev, pager, next, jumper"
         :total="total"
@@ -88,7 +88,7 @@ export default {
       carList: [],
       params: {
         page: 1,
-        pageSize: 10,
+        pageSize: 2,
         carNumber: '',
         personName: '',
         cardStatus: null
@@ -107,11 +107,17 @@ export default {
     this.getMonthList()
   },
   methods: {
+    // 修改自定义序号
+    indexMethod(index) {
+      return index + 1 + (this.params.page - 1) * this.params.pageSize
+    },
+    // 获取月卡列表
     async getMonthList() {
       const res = await getMonthListAPI(this.params)
       this.carList = res.data.rows
       this.total = res.data.total
     },
+    // 判断月卡状态
     formatStatus(row) {
       const obj = {
         0: '可用',
@@ -119,10 +125,12 @@ export default {
       }
       return obj[row.cardStatus]
     },
+    // 修改页容量重新渲染
     handleSizeChange(val) {
       this.params.pageSize = val
       this.getMonthList()
     },
+    // 修改页数重新渲染
     handleCurrentChange(val) {
       this.params.page = val
       this.getMonthList()
