@@ -7,7 +7,7 @@
       <span class="search-label">车主姓名：</span>
       <el-input clearable placeholder="请输入内容" class="search-main" />
       <span class="search-label">状态：</span>
-      <el-select>
+      <el-select v-model="statusList">
         <el-option v-for="(item,index) in []" :key="index" />
       </el-select>
       <el-button type="primary" class="search-btn">查询</el-button>
