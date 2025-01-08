@@ -17,3 +17,8 @@ export const addMonthCardAPI = (data) => {
     data,
   });
 };
+
+// 删除月卡
+export const delMonthCardAPI = (id) => {
+  return request.delete(`/parking/card/${id}`);
+};

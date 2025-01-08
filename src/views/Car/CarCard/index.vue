@@ -15,11 +15,11 @@
     <!-- 新增删除操作区域 -->
     <div class="create-container">
       <el-button type="primary" @click="$router.push('/car/addcard')">添加月卡</el-button>
-      <el-button>批量删除</el-button>
+      <el-button @click="delMonthCard">批量删除</el-button>
     </div>
     <!-- 表格区域 -->
     <div class="table">
-      <el-table style="width: 100%" :data="carList" row-class-name="tablelist">
+      <el-table style="width: 100%" :data="carList" row-class-name="tablelist" @selection-change="handleSelectionChange">
         <el-table-column type="selection" width="55" />
         <el-table-column type="index" label="序号" :index="indexMethod" />
         <el-table-column label="车主名称" prop="personName" />
@@ -34,7 +34,7 @@
             <el-button size="mini" type="text">续费</el-button>
             <el-button size="mini" type="text">查看</el-button>
             <el-button size="mini" type="text">编辑</el-button>
-            <el-button size="mini" type="text">删除</el-button>
+            <el-button size="mini" type="text" @click="delMonthCard(scope.row.id)">删除</el-button>
           </template>
         </el-table-column>
         <template slot="empty">
@@ -86,8 +86,8 @@
 </template>
 
 <script>
-// 导入获取月卡列表API
-import { getMonthListAPI } from '@/api/month'
+// 导入 获取月卡列表、删除月卡 API
+import { getMonthListAPI, delMonthCardAPI } from '@/api/month'
 
 export default {
   data() {
@@ -121,7 +121,8 @@ export default {
         area: '',
         propertyFeePrice: ''
       },
-      addFormRules: []
+      addFormRules: [],
+      multipleSelection: []
     }
   },
   created() {
@@ -174,6 +175,40 @@ export default {
     handleCurrentChange(val) {
       this.params.page = val
       this.getMonthList()
+    },
+    // 批量选择数据
+    handleSelectionChange(val) {
+      this.multipleSelection = val
+    },
+    // 删除月卡
+    async delMonthCard(id = null) {
+      // 判断有没有传入id
+      if (typeof id === 'number') {
+        // 有传入id单点删除按钮
+        const res = await delMonthCardAPI(id)
+        if (res.code === 10000) {
+          this.$message.success('删除成功.')
+          // 重新获取月卡
+          this.getMonthList()
+        } else {
+          this.$message.error(res.msg)
+        }
+      } else {
+        // 没传入id 点击批量删除按钮
+        if (this.multipleSelection.length > 0) {
+          // 将选择存放数据的数组获取所有id
+          const reg = this.multipleSelection.map(item => item.id)
+          // 将数组所有id转换成 ‘id,id’字符串格式然后调用接口删除数据
+          const res = await delMonthCardAPI(reg.join(','))
+          if (res.code === 10000) {
+            this.$message.success('删除成功.')
+            // 重新获取月卡
+            this.getMonthList()
+          } else {
+            this.$message.error(res.msg)
+          }
+        }
+      }
     }
   }
 }
