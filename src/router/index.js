@@ -18,6 +18,12 @@ export const routes = [
     meta: { title: "添加月卡" },
   },
   {
+    path: "/car/editcard",
+    // permission: "parking:addcard",
+    component: () => import("@/views/Car/CarCard/editMonthCard.vue"),
+    meta: { title: "编辑月卡" },
+  },
+  {
     path: "/login",
     component: () => import("@/views/Login/index"),
     hidden: true,

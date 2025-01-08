@@ -22,3 +22,17 @@ export const addMonthCardAPI = (data) => {
 export const delMonthCardAPI = (id) => {
   return request.delete(`/parking/card/${id}`);
 };
+
+// 获取编辑月卡详情
+export const getMonthItemAPI = (id) => {
+  return request.get(`/parking/card/detail/${id}`);
+};
+
+// 编辑月卡信息
+export const editMonthItemAPI = (data) => {
+  return request({
+    url: "/parking/card/edit",
+    method: "put",
+    data,
+  });
+};
