@@ -8,3 +8,12 @@ export function getMonthListAPI(params) {
     params,
   });
 }
+
+// 添加月卡
+export const addMonthCardAPI = (data) => {
+  return request({
+    url: "/parking/card",
+    method: "post",
+    data,
+  });
+};

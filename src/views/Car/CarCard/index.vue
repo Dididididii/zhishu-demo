@@ -3,23 +3,23 @@
     <!-- 搜索区域 -->
     <div class="search-container">
       <span class="search-label">车牌号码：</span>
-      <el-input clearable placeholder="请输入内容" class="search-main" />
+      <el-input v-model="params.carNumber" clearable placeholder="请输入内容" class="search-main" />
       <span class="search-label">车主姓名：</span>
-      <el-input clearable placeholder="请输入内容" class="search-main" />
+      <el-input v-model="params.personName" clearable placeholder="请输入内容" class="search-main" />
       <span class="search-label">状态：</span>
-      <el-select v-model="statusList">
-        <el-option v-for="(item,index) in []" :key="index" />
+      <el-select v-model="params.cardStatus">
+        <el-option v-for="item in statusList" :key="item.id" :label="item.label" :value="item.id" />
       </el-select>
-      <el-button type="primary" class="search-btn">查询</el-button>
+      <el-button type="primary" class="search-btn" @click="queryCardList">查询</el-button>
     </div>
     <!-- 新增删除操作区域 -->
     <div class="create-container">
-      <el-button type="primary">添加月卡</el-button>
+      <el-button type="primary" @click="$router.push('/car/addcard')">添加月卡</el-button>
       <el-button>批量删除</el-button>
     </div>
     <!-- 表格区域 -->
     <div class="table">
-      <el-table style="width: 100%" :data="carList" :highlight-selection-row="true">
+      <el-table style="width: 100%" :data="carList" row-class-name="tablelist">
         <el-table-column type="selection" width="55" />
         <el-table-column type="index" label="序号" :index="indexMethod" />
         <el-table-column label="车主名称" prop="personName" />
@@ -37,6 +37,14 @@
             <el-button size="mini" type="text">删除</el-button>
           </template>
         </el-table-column>
+        <template slot="empty">
+          <div class="table-empty">
+            <slot name="empty">
+              <img src="@/assets/empty.svg" alt="notData" style="width: 160px; height: 160px" />
+              <!-- <div>暂无内222容</div> -->
+            </slot>
+          </div>
+        </template>
       </el-table>
     </div>
     <div class="page-container">
@@ -51,9 +59,9 @@
       />
     </div>
     <!-- 添加楼宇 -->
-    <el-dialog title="添加楼宇" width="580px">
-      <!-- 表单接口 -->
-      <div class="form-container">
+    <!-- <el-dialog title="添加楼宇" width="580px"> -->
+    <!-- 表单接口 -->
+    <!-- <div class="form-container">
         <el-form ref="addForm" :model="addForm" :rules="addFormRules">
           <el-form-item label="楼宇名称" prop="name">
             <el-input v-model="addForm.name" />
@@ -73,7 +81,7 @@
         <el-button size="mini">取 消</el-button>
         <el-button size="mini" type="primary">确 定</el-button>
       </template>
-    </el-dialog>
+    </el-dialog>-->
   </div>
 </template>
 
@@ -84,7 +92,20 @@ import { getMonthListAPI } from '@/api/month'
 export default {
   data() {
     return {
-      statusList: ['全部', '可用', '已过期'],
+      statusList: [
+        {
+          id: null,
+          label: '全部'
+        },
+        {
+          id: 0,
+          label: '可用'
+        },
+        {
+          id: 1,
+          label: '已过期'
+        }
+      ],
       carList: [],
       params: {
         page: 1,
@@ -107,6 +128,25 @@ export default {
     this.getMonthList()
   },
   methods: {
+    // 查询月卡
+    queryCardList() {
+      this.params.page = 1
+      this.getMonthList()
+    },
+    // 车牌号码校验
+    isValidLicensePlate(e) {
+      // 使用正则表达式验证车牌号格式
+      const regex = /^[\u4e00-\u9fa5]{1}[A-Z]{1}[A-Z_0-9]{5,6}$/
+      if (e.target.value === '') {
+        return
+      } else {
+        if (regex.test(e.target.value)) {
+          console.log('正确')
+        } else {
+          this.$message.error('车牌号格式不对,请输入正确的格式.')
+        }
+      }
+    },
     // 修改自定义序号
     indexMethod(index) {
       return index + 1 + (this.params.page - 1) * this.params.pageSize
@@ -140,6 +180,9 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.tablelist {
+  background: rgb(244, 246, 248) !important;
+}
 .card-container {
   padding: 20px;
   background-color: #fff;

@@ -12,6 +12,12 @@ const linkList = ["/login", "/404"];
 
 export const routes = [
   {
+    path: "/car/addcard",
+    // permission: "parking:addcard",
+    component: () => import("@/views/Car/CarCard/addMonthCard.vue"),
+    meta: { title: "添加月卡" },
+  },
+  {
     path: "/login",
     component: () => import("@/views/Login/index"),
     hidden: true,
