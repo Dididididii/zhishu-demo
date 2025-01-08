@@ -18,7 +18,7 @@
       <el-button @click="open">批量删除</el-button>
     </div>
     <!-- 表格区域 -->
-    <div class="table">
+    <div v-loading="loading" class="table">
       <el-table style="width: 100%" :data="carList" row-class-name="tablelist" @selection-change="handleSelectionChange">
         <el-table-column type="selection" width="55" />
         <el-table-column type="index" label="序号" :index="indexMethod" />
@@ -92,6 +92,7 @@ import { getMonthListAPI, delMonthCardAPI } from '@/api/month'
 export default {
   data() {
     return {
+      loading: true,
       statusList: [
         {
           id: null,
@@ -154,9 +155,11 @@ export default {
     },
     // 获取月卡列表
     async getMonthList() {
+      this.loading = true
       const res = await getMonthListAPI(this.params)
       this.carList = res.data.rows
       this.total = res.data.total
+      this.loading = false
     },
     // 判断月卡状态
     formatStatus(row) {
@@ -218,9 +221,7 @@ export default {
       }).then(() => {
         this.delMonthCard(id)
       })
-    },
-    // 跳转到编辑月卡
-    editCard(id) {}
+    }
   }
 }
 </script>

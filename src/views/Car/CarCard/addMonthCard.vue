@@ -1,5 +1,5 @@
 <template>
-  <div class="add-card">
+  <div v-loading.fullscreen.lock="fullscreenLoading" class="add-card">
     <header class="add-header">
       <el-page-header :content="typeAll[$route.query.type]" @back="$router.back()" />
     </header>
@@ -111,6 +111,8 @@ import { addMonthCardAPI, getMonthItemAPI, editMonthItemAPI, renewMonthItemAPI, 
 export default {
   data() {
     return {
+      // 懒加载
+      fullscreenLoading: false,
       rechargeList: [],
       cardMsg: ['添加月卡信息', '最近一次月卡缴费信息', '月卡缴费信息', '月卡缴费记录'],
       // 提示消息
@@ -194,6 +196,8 @@ export default {
   },
   created() {
     if (this.$route.query.type === '1' || this.$route.query.type === '2' || this.$route.query.type === '3') {
+      // 开启懒加载
+      this.fullscreenLoading = true
       // 编辑月卡
       this.getMonthItem()
       if (this.$route.query.type === '2') {
@@ -341,6 +345,8 @@ export default {
       this.formData1.phoneNumber = res.data.phoneNumber
       this.formData1.personName = res.data.personName
       this.formData1.carNumber = res.data.carNumber
+      // 关闭懒加载
+      this.fullscreenLoading = false
     }
   }
 }
