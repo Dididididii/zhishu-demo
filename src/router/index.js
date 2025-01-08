@@ -20,13 +20,16 @@ export const routes = [
   {
     path: "/car/editcard",
     // permission: "parking:addcard",
-    component: () => import("@/views/Car/CarCard/editMonthCard.vue"),
+    component: () => import("@/views/Car/CarCard/addMonthCard.vue"),
+
+    // component: () => import("@/views/Car/CarCard/editMonthCard.vue"),
     meta: { title: "编辑月卡" },
   },
   {
     path: "/car/renewcard",
     // permission: "parking:addcard",
-    component: () => import("@/views/Car/CarCard/renewMonthCard.vue"),
+    component: () => import("@/views/Car/CarCard/addMonthCard.vue"),
+    // component: () => import("@/views/Car/CarCard/renewMonthCard.vue"),
     meta: { title: "月卡续费" },
   },
   {

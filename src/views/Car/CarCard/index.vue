@@ -14,7 +14,7 @@
     </div>
     <!-- 新增删除操作区域 -->
     <div class="create-container">
-      <el-button type="primary" @click="$router.push('/car/addcard')">添加月卡</el-button>
+      <el-button type="primary" @click="$router.push({path:'/car/renewcard',query: {type:0}})">添加月卡</el-button>
       <el-button @click="open">批量删除</el-button>
     </div>
     <!-- 表格区域 -->
@@ -31,9 +31,9 @@
         <el-table-column label="状态" prop="cardStatus" :formatter="formatStatus" />
         <el-table-column label="操作" fixed="right" width="180">
           <template #default="scope">
-            <el-button size="mini" type="text" @click="$router.push({path:'/car/renewcard',query: {id:scope.row.id}})">续费</el-button>
+            <el-button size="mini" type="text" @click="$router.push({path:'/car/renewcard',query: {id:scope.row.id,type:2}})">续费</el-button>
             <el-button size="mini" type="text">查看</el-button>
-            <el-button size="mini" type="text" @click="$router.push({path:'/car/editcard',query: {id:scope.row.id}})">编辑</el-button>
+            <el-button size="mini" type="text" @click="$router.push({path:'/car/editcard',query: {id:scope.row.id,type:1}})">编辑</el-button>
             <el-button size="mini" type="text" @click="open(scope.row.id)">删除</el-button>
           </template>
         </el-table-column>
