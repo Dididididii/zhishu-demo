@@ -15,7 +15,7 @@
     <!-- 新增删除操作区域 -->
     <div class="create-container">
       <el-button type="primary" @click="$router.push('/car/addcard')">添加月卡</el-button>
-      <el-button @click="delMonthCard">批量删除</el-button>
+      <el-button @click="open">批量删除</el-button>
     </div>
     <!-- 表格区域 -->
     <div class="table">
@@ -34,7 +34,7 @@
             <el-button size="mini" type="text">续费</el-button>
             <el-button size="mini" type="text">查看</el-button>
             <el-button size="mini" type="text">编辑</el-button>
-            <el-button size="mini" type="text" @click="delMonthCard(scope.row.id)">删除</el-button>
+            <el-button size="mini" type="text" @click="open(scope.row.id)">删除</el-button>
           </template>
         </el-table-column>
         <template slot="empty">
@@ -181,7 +181,7 @@ export default {
       this.multipleSelection = val
     },
     // 删除月卡
-    async delMonthCard(id = null) {
+    async delMonthCard(id) {
       // 判断有没有传入id
       if (typeof id === 'number') {
         // 有传入id单点删除按钮
@@ -209,6 +209,15 @@ export default {
           }
         }
       }
+    },
+    open(id = null) {
+      this.$confirm('是否确定删除月卡', '', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        this.delMonthCard(id)
+      })
     }
   }
 }
