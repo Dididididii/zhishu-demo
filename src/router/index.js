@@ -24,6 +24,12 @@ export const routes = [
     meta: { title: "编辑月卡" },
   },
   {
+    path: "/car/renewcard",
+    // permission: "parking:addcard",
+    component: () => import("@/views/Car/CarCard/renewMonthCard.vue"),
+    meta: { title: "月卡续费" },
+  },
+  {
     path: "/login",
     component: () => import("@/views/Login/index"),
     hidden: true,

@@ -36,3 +36,12 @@ export const editMonthItemAPI = (data) => {
     data,
   });
 };
+
+// 月卡续费
+export const renewMonthItemAPI = (data) => {
+  return request({
+    url: "/parking/card/recharge",
+    method: "post",
+    data,
+  });
+};
