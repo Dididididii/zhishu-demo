@@ -32,7 +32,7 @@
         <el-table-column label="操作" fixed="right" width="180">
           <template #default="scope">
             <el-button size="mini" type="text" @click="$router.push({path:'/car/renewcard',query: {id:scope.row.id,type:2}})">续费</el-button>
-            <el-button size="mini" type="text">查看</el-button>
+            <el-button size="mini" type="text" @click="$router.push({path:'/car/checkcard',query: {id:scope.row.id,type:3}})">查看</el-button>
             <el-button size="mini" type="text" @click="$router.push({path:'/car/editcard',query: {id:scope.row.id,type:1}})">编辑</el-button>
             <el-button size="mini" type="text" @click="open(scope.row.id)">删除</el-button>
           </template>

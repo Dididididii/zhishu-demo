@@ -7,27 +7,32 @@
       <div class="form-container">
         <div class="title">车辆信息</div>
         <div class="form">
-          <el-form ref="fromInfo1" label-width="100px" :model="formData1" :rules="rules1">
-            <el-form-item label="车主姓名" prop="personName">
-              <el-input v-model="formData1.personName" :disabled="$route.query.type === '2'" />
+          <el-form ref="fromInfo1" label-width="100px" :model="formData1" :rules="$route.query.type === '3'? {} :rules1">
+            <el-form-item label="车主姓名:" prop="personName">
+              <el-input v-if="$route.query.type !== '3'" v-model="formData1.personName" :disabled="$route.query.type === '2'" />
+              <span v-else>{{ formData1.personName }}</span>
             </el-form-item>
-            <el-form-item label="联系方式" prop="phoneNumber">
-              <el-input v-model="formData1.phoneNumber" :disabled="$route.query.type === '2'" />
+            <el-form-item label="联系方式:" prop="phoneNumber">
+              <el-input v-if="$route.query.type !== '3'" v-model="formData1.phoneNumber" :disabled="$route.query.type === '2'" />
+              <span v-else>{{ formData1.phoneNumber }}</span>
             </el-form-item>
-            <el-form-item label="车辆号码" prop="carNumber">
-              <el-input v-model="formData1.carNumber" :disabled="$route.query.type === '2'" />
+            <el-form-item label="车辆号码:" prop="carNumber">
+              <el-input v-if="$route.query.type !== '3'" v-model="formData1.carNumber" :disabled="$route.query.type === '2'" />
+              <span v-else>{{ formData1.carNumber }}</span>
             </el-form-item>
-            <el-form-item label="车辆品牌" prop="carBrand">
-              <el-input v-model="formData1.carBrand" :disabled="$route.query.type === '2'" />
+            <el-form-item label="车辆品牌:" prop="carBrand">
+              <el-input v-if="$route.query.type !== '3'" v-model="formData1.carBrand" :disabled="$route.query.type === '2'" />
+              <span v-else>{{ formData1.carBrand }}</span>
             </el-form-item>
           </el-form>
         </div>
       </div>
       <div class="form-container">
-        <div class="title">最新一次月卡缴费信息</div>
+        <div class="title">{{ cardMsg[$route.query.type] }}</div>
         <div class="form">
-          <el-form ref="fromInfo2" label-width="100px" :rules="rules2" :model="formData2">
-            <el-form-item label="有效日期" prop="payTime">
+          <!-- 不是查看时显示 -->
+          <el-form v-if="$route.query.type !== '3'" ref="fromInfo2" label-width="100px" :rules="rules2" :model="formData2">
+            <el-form-item label="有效日期:" prop="payTime">
               <el-date-picker
                 v-model="formData2.payTime"
                 :default-value="$route.query.type === '2' ? formatDate(new Date(), 'YY-MM-DD') : new Date()"
@@ -45,19 +50,52 @@
                 </template>
               </el-date-picker>
               </el-date-picker></el-form-item>
-            <el-form-item label="支付金额" prop="paymentAmount">
+            <el-form-item label="支付金额:" prop="paymentAmount">
               <el-input v-model="formData2.paymentAmount" />
             </el-form-item>
-            <el-form-item label="支付方式" prop="paymentMethod">
+            <el-form-item label="支付方式:" prop="paymentMethod">
               <el-select v-model="formData2.paymentMethod" placeholder="请选择支付方式">
                 <el-option v-for="item in pay" :key="item.industryCode" :value="item.industryCode" :label="item.industryName" />
               </el-select>
             </el-form-item>
           </el-form>
+          <!-- 是查看时显示 -->
+          <el-table
+            v-else
+            :data="rechargeList"
+            style="width: 100%"
+          >
+            <el-table-column
+              type="index"
+              label="序号"
+              width="80"
+            />
+            <el-table-column
+              prop="StartAndEndDate"
+              label="有效时间"
+              width="280"
+            />
+            <el-table-column
+              prop="paymentAmount"
+              label="支付金额"
+            />
+            <el-table-column
+              prop="payMethod"
+              label="支付方式"
+            />
+            <el-table-column
+              prop="createTime"
+              label="办理时间"
+            />
+            <el-table-column
+              prop="createUser"
+              label="办理人"
+            />
+          </el-table>
         </div>
       </div>
     </main>
-    <footer class="add-footer">
+    <footer v-if="$route.query.type !== '3'" class="add-footer"">
       <div class="btn-container">
         <el-button @click="resetForm">重置</el-button>
         <el-button type="primary" @click="onSubmit">确定</el-button>
@@ -67,12 +105,14 @@
 </template>
 
 <script>
-// 导入 添加月卡 编辑月卡信息接口 获取月卡详情 续费月卡信息接口 接口
-import { addMonthCardAPI, getMonthItemAPI, editMonthItemAPI, renewMonthItemAPI } from '@/api/month'
+// 导入 添加月卡 编辑月卡信息接口 获取月卡详情 续费月卡信息接口 查看月卡详情 接口
+import { addMonthCardAPI, getMonthItemAPI, editMonthItemAPI, renewMonthItemAPI, checkMonthItemAPI } from '@/api/month'
 
 export default {
   data() {
     return {
+      rechargeList: [],
+      cardMsg: ['添加月卡信息', '最近一次月卡缴费信息', '月卡缴费信息', '月卡缴费记录'],
       // 提示消息
       msg: ['车辆信息添加成功.', '车辆信息修改成功.', '车辆续费成功.'],
       cardInfor: {
@@ -80,7 +120,7 @@ export default {
         rechargeId: 0
       },
       // 页面类型
-      typeAll: ['增加月卡', '编辑月卡', '月卡续费'],
+      typeAll: ['增加月卡', '编辑月卡', '月卡续费', '查看详情'],
       formData1: {
         personName: '',
         phoneNumber: '',
@@ -153,7 +193,7 @@ export default {
     }
   },
   created() {
-    if (this.$route.query.type === '1' || this.$route.query.type === '2') {
+    if (this.$route.query.type === '1' || this.$route.query.type === '2' || this.$route.query.type === '3') {
       // 编辑月卡
       this.getMonthItem()
       if (this.$route.query.type === '2') {
@@ -281,16 +321,26 @@ export default {
     },
     // 获取月卡详情
     async getMonthItem() {
-      const res = await getMonthItemAPI(this.$route.query.id)
-      this.formData1.personName = res.data.personName
-      this.formData1.phoneNumber = res.data.phoneNumber
-      this.formData1.carNumber = res.data.carNumber
+      let res = null
+      if (this.$route.query.type === '3') {
+        res = await checkMonthItemAPI(this.$route.query.id)
+        this.rechargeList = res.data.rechargeList
+        this.rechargeList.map((item, { cardStartDate, cardEndDate }) => {
+          item.StartAndEndDate = item.cardStartDate + ' 至 ' + item.cardEndDate
+          item.payMethod = this.pay.filter(item1 => item1.industryCode === item.paymentMethod)[0].industryName
+        })
+      } else {
+        res = await getMonthItemAPI(this.$route.query.id)
+        this.formData2.payTime = this.$route.query.type === '1' ? [res.data.cardStartDate, res.data.cardEndDate] : [res.data.cardStartDate]
+        this.formData2.paymentAmount = res.data.paymentAmount
+        this.formData2.paymentMethod = res.data.paymentMethod
+        this.cardInfor.rechargeId = res.data.rechargeId
+      }
       this.formData1.carBrand = res.data.carBrand
-      this.formData2.payTime = this.$route.query.type === '1' ? [res.data.cardStartDate, res.data.cardEndDate] : [res.data.cardStartDate]
-      this.formData2.paymentAmount = res.data.paymentAmount
-      this.formData2.paymentMethod = res.data.paymentMethod
-      this.cardInfor.rechargeId = res.data.rechargeId
       this.cardInfor.carInfoId = res.data.carInfoId
+      this.formData1.phoneNumber = res.data.phoneNumber
+      this.formData1.personName = res.data.personName
+      this.formData1.carNumber = res.data.carNumber
     }
   }
 }

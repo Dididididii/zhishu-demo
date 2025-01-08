@@ -33,6 +33,12 @@ export const routes = [
     meta: { title: "月卡续费" },
   },
   {
+    path: "/car/checkcard",
+    // permission: "parking:addcard",
+    component: () => import("@/views/Car/CarCard/addMonthCard.vue"),
+    meta: { title: "查看详情" },
+  },
+  {
     path: "/login",
     component: () => import("@/views/Login/index"),
     hidden: true,

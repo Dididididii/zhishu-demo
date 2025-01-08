@@ -45,3 +45,8 @@ export const renewMonthItemAPI = (data) => {
     data,
   });
 };
+
+// 查看月卡详情
+export const checkMonthItemAPI = (id) => {
+  return request.get(`/parking/card/${id}`);
+};
