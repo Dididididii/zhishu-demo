@@ -72,7 +72,7 @@
 // 导入获取企业行业 添加企业 查看企业 编辑企业 接口
 import { searchEnterPriseIndustryAPI, addEnterpriseAPI, searchEnterpriseAPI, updatEnterpriseAPI } from '@/api/enterprise'
 // 导入上传图片接口
-import { uploadImageAPI } from '@/api/commit'
+import { uploadAPI } from '@/api/commit'
 
 export default {
   data() {
@@ -148,7 +148,7 @@ export default {
       const formData = new FormData()
       formData.append('file', file)
       formData.append('type', 1)
-      const res = await uploadImageAPI(formData)
+      const res = await uploadAPI(formData)
       this.addForm.businessLicenseId = res.data.id
       this.addForm.businessLicenseUrl = res.data.url
       //   console.log(res)

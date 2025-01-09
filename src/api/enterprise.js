@@ -42,3 +42,12 @@ export const updatEnterpriseAPI = (data) => {
 export const delEnterpriseAPI = (id) => {
   return request.delete(`/park/enterprise/${id}`);
 };
+
+// 添加/续租企业的租赁合同
+export const addEnterpriseRentAPI = (data) => {
+  return request({
+    url: "/park/enterprise/rent",
+    method: "post",
+    data,
+  });
+};
