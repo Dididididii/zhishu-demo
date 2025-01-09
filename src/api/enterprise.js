@@ -23,3 +23,17 @@ export const addEnterpriseAPI = (data) => {
     data,
   });
 };
+
+// 查看企业
+export const searchEnterpriseAPI = (id) => {
+  return request.get(`/park/enterprise/${id}`);
+};
+
+// 编辑企业
+export const updatEnterpriseAPI = (data) => {
+  return request({
+    url: "/park/enterprise",
+    method: "put",
+    data,
+  });
+};

@@ -7,7 +7,7 @@
       <el-button type="primary" @click="searchEnterprise">查询</el-button>
     </div>
     <div class="create-container">
-      <el-button type="primary" @click="$router.push({path:'/enterprise/add',query:{type:'add'}})">添加企业</el-button>
+      <el-button type="primary" @click="$router.push({path:'/enterprise/add'})">添加企业</el-button>
     </div>
     <!-- 表格区域 -->
     <div class="table">
@@ -20,7 +20,7 @@
           <template #default="scope">
             <el-button size="mini" type="text">添加合同</el-button>
             <el-button size="mini" type="text">查看</el-button>
-            <el-button size="mini" type="text">编辑</el-button>
+            <el-button size="mini" type="text" @click="$router.push({path:'/enterprise/edit',query:{id:scope.row.id}})">编辑</el-button>
             <el-button size="mini" type="text">删除</el-button>
           </template>
         </el-table-column>

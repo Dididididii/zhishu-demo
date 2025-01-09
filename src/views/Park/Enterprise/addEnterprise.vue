@@ -6,7 +6,7 @@
           <i class="el-icon-arrow-left" />返回
         </span>
         <span>|</span>
-        <span>添加企业</span>
+        <span>{{ pageTitle }}</span>
       </div>
       <div class="right">黑马程序员</div>
     </header>
@@ -44,8 +44,13 @@
                 :limit="1"
                 :http-request="uploadImage"
                 :on-remove="removeImage"
+                :file-list="fileList"
               >
-                <el-button size="small" type="primary">点击上传</el-button>
+                <el-button
+                  size="small"
+                  :disabled="fileList.length>0"
+                  :type="addForm.businessLicenseUrl ? 'success' : 'primary'"
+                >{{ addForm.businessLicenseUrl ? '已上传' : '上传文件' }}</el-button>
                 <div slot="tip" class="el-upload__tip">支持扩展名：.png .jpg .jpeg，文件大小不得超过5M</div>
               </el-upload>
             </el-form-item>
@@ -64,14 +69,15 @@
 </template>
 
 <script>
-// 导入获取企业行业 添加企业 接口
-import { searchEnterPriseIndustryAPI, addEnterpriseAPI } from '@/api/enterprise'
+// 导入获取企业行业 添加企业 查看企业 编辑企业 接口
+import { searchEnterPriseIndustryAPI, addEnterpriseAPI, searchEnterpriseAPI, updatEnterpriseAPI } from '@/api/enterprise'
 // 导入上传图片接口
 import { uploadImageAPI } from '@/api/commit'
 
 export default {
   data() {
     return {
+      fileList: [],
       url: '',
       srcList: [],
       addForm: {
@@ -102,6 +108,12 @@ export default {
       }
     }
   },
+  computed: {
+    pageTitle() {
+      if (this.$route.path === '/enterprise/add') return '添加企业'
+      if (this.$route.path === '/enterprise/edit') return '编辑企业'
+    }
+  },
   created() {
     this.searchEnterPriseIndustry()
   },
@@ -112,6 +124,7 @@ export default {
       this.addForm.businessLicenseUrl = ''
       this.srcList = []
       this.url = ''
+      this.fileList = []
     },
     // 点击图片名称时放大图片
     previewUpload() {
@@ -138,10 +151,12 @@ export default {
       const res = await uploadImageAPI(formData)
       this.addForm.businessLicenseId = res.data.id
       this.addForm.businessLicenseUrl = res.data.url
+      //   console.log(res)
       this.srcList = []
       this.url = res.data.url
       this.srcList.push(res.data.url)
       this.$refs.ruleForm.validateField('businessLicenseId')
+      this.fileList.push({ name: res.data.name, file: res.data.url })
     },
     // 手机号码校验
     photoPass(rule, value, callback) {
@@ -156,19 +171,37 @@ export default {
     async searchEnterPriseIndustry() {
       const res = await searchEnterPriseIndustryAPI()
       this.options = res.data
+      if (this.$route.path === '/enterprise/edit') {
+        const { data } = await searchEnterpriseAPI(this.$route.query.id)
+        this.addForm = data
+        this.fileList.push({ name: data.businessLicenseName, file: data.businessLicenseUrl })
+        this.srcList = []
+        this.url = data.businessLicenseUrl
+        this.srcList.push(data.businessLicenseUrl)
+        // console.log(data)
+      }
     },
     submitForm() {
       this.$refs.ruleForm.validate(async valid => {
         if (!valid) return
         // 校验成功，提交接口
-        await addEnterpriseAPI(this.addForm)
-        this.$message.success('添加成功.')
+        if (this.$route.path === '/enterprise/add') {
+          await addEnterpriseAPI(this.addForm)
+          this.$message.success('添加成功.')
+        } else if (this.$route.path === '/enterprise/edit') {
+          delete this.addForm.industryName
+          delete this.addForm.rent
+          delete this.addForm.businessLicenseName
+          await updatEnterpriseAPI(this.addForm)
+          this.$message.success('修改成功.')
+        }
         this.$router.back()
         this.resetForm()
       })
     },
     resetForm() {
       this.$refs.ruleForm.resetFields()
+      this.removeImage()
     }
   }
 }
