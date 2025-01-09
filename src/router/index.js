@@ -11,11 +11,21 @@ import Layout from "@/layout";
 const linkList = ["/login", "/404"];
 
 export const routes = [
+  // 企业管理处理页面
+  {
+    path: "/enterprise/add",
+    // permission: "parking:addcard",
+    component: () => import("@/views/Park/Enterprise/addEnterprise.vue"),
+    meta: { title: "添加企业" },
+    hidden: true,
+  },
+  // 月卡处理页面
   {
     path: "/car/addcard",
     // permission: "parking:addcard",
     component: () => import("@/views/Car/CarCard/addMonthCard.vue"),
     meta: { title: "添加月卡" },
+    hidden: true,
   },
   {
     path: "/car/editcard",
@@ -24,6 +34,7 @@ export const routes = [
 
     // component: () => import("@/views/Car/CarCard/editMonthCard.vue"),
     meta: { title: "编辑月卡" },
+    hidden: true,
   },
   {
     path: "/car/renewcard",
@@ -31,12 +42,14 @@ export const routes = [
     component: () => import("@/views/Car/CarCard/addMonthCard.vue"),
     // component: () => import("@/views/Car/CarCard/renewMonthCard.vue"),
     meta: { title: "月卡续费" },
+    hidden: true,
   },
   {
     path: "/car/checkcard",
     // permission: "parking:addcard",
     component: () => import("@/views/Car/CarCard/addMonthCard.vue"),
     meta: { title: "查看详情" },
+    hidden: true,
   },
   {
     path: "/login",
