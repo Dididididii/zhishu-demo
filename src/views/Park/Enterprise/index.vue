@@ -57,7 +57,7 @@
             />
           </el-form-item>
           <el-form-item label="租赁合同" prop="contractId">
-            <el-upload action="#" :limit="1" :before-upload="beforeUpload" :http-request="loadWPS">
+            <el-upload action="#" :limit="1" :before-upload="beforeUpload" :http-request="loadWPS" :on-remove="onRemove">
               <el-button size="small" type="primary" plain>上传合同文件</el-button>
               <div slot="tip" class="el-upload__tip">支持扩展名：.doc .docx .pdf, 文件大小不超过5M</div>
             </el-upload>
@@ -256,6 +256,12 @@ export default {
       // console.log(res)
       this.rentForm.contractId = res.data.id
       this.rentForm.contractUrl = res.data.url
+    },
+    // 删除文件时的校验
+    onRemove() {
+      this.rentForm.contractId = null
+      this.rentForm.contractUrl = ''
+      this.$refs.addForm.validateField('contractId')
     }
   }
 }
