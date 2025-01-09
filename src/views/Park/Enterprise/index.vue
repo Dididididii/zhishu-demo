@@ -19,7 +19,7 @@
         <el-table-column label="操作">
           <template #default="scope">
             <el-button size="mini" type="text" @click="openDialog(scope.row.id)">添加合同</el-button>
-            <el-button size="mini" type="text">查看</el-button>
+            <el-button size="mini" type="text" @click="$router.push({path:'/enterprise/see',query:{id:scope.row.id}})">查看</el-button>
             <el-button size="mini" type="text" @click="$router.push({path:'/enterprise/edit',query:{id:scope.row.id}})">编辑</el-button>
             <el-button size="mini" type="text" @click="removeEnterprise(scope.row.id)">删除</el-button>
           </template>

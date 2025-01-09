@@ -51,3 +51,13 @@ export const addEnterpriseRentAPI = (data) => {
     data,
   });
 };
+
+// 删除企业的租赁合同
+export const delEnterpriseContractAPI = (id) => {
+  return request.delete(`/park/enterprise/rent/${id}`);
+};
+
+// 退租租赁合同
+export const quitEnterpriseContractAPI = (id) => {
+  return request.put(`/park/enterprise/rent/${id}`);
+};

@@ -26,6 +26,13 @@ export const routes = [
     meta: { title: "编辑企业" },
     hidden: true,
   },
+  {
+    path: "/enterprise/see",
+    // permission: "parking:addcard",
+    component: () => import("@/views/Park/Enterprise/addEnterprise.vue"),
+    meta: { title: "查看企业" },
+    hidden: true,
+  },
   // 月卡处理页面
   {
     path: "/car/addcard",

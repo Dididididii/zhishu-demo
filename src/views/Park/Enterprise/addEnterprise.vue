@@ -14,29 +14,36 @@
       <div class="form-container">
         <div class="title">企业信息</div>
         <div class="form">
-          <el-form ref="ruleForm" label-width="100px" :rules="rules" :model="addForm">
-            <el-form-item label="企业名称" prop="name">
-              <el-input v-model="addForm.name" />
+          <el-form ref="ruleForm" label-width="100px" :rules="$route.path==='/enterprise/see' ? {}:rules" :model="addForm">
+            <el-form-item label="企业名称:" prop="name">
+              <el-input v-if="$route.path!=='/enterprise/see'" v-model="addForm.name" />
+              <span v-else>{{ addForm.name }}</span>
             </el-form-item>
-            <el-form-item label="法人" prop="legalPerson">
-              <el-input v-model="addForm.legalPerson" />
+            <el-form-item label="法人:" prop="legalPerson">
+              <el-input v-if="$route.path!=='/enterprise/see'" v-model="addForm.legalPerson" />
+              <span v-else>{{ addForm.legalPerson }}</span>
             </el-form-item>
-            <el-form-item label="注册地址" prop="registeredAddress">
-              <el-input v-model="addForm.registeredAddress" />
+            <el-form-item label="注册地址:" prop="registeredAddress">
+              <el-input v-if="$route.path!=='/enterprise/see'" v-model="addForm.registeredAddress" />
+              <span v-else>{{ addForm.registeredAddress }}</span>
             </el-form-item>
-            <el-form-item label="所在行业" prop="industryCode">
-              <el-select v-model="addForm.industryCode">
+            <el-form-item label="所在行业:" prop="industryCode">
+              <el-select v-if="$route.path!=='/enterprise/see'" v-model="addForm.industryCode">
                 <el-option v-for="item in options" :key="item.industryCode" :label="item.industryName" :value="item.industryCode" />
               </el-select>
+              <span v-else>{{ industry }}</span>
             </el-form-item>
-            <el-form-item label="企业联系人" prop="contact">
-              <el-input v-model="addForm.contact" />
+            <el-form-item label="企业联系人:" prop="contact">
+              <el-input v-if="$route.path!=='/enterprise/see'" v-model="addForm.contact" />
+              <span v-else>{{ addForm.contact }}</span>
             </el-form-item>
-            <el-form-item label="联系电话" prop="contactNumber">
-              <el-input v-model="addForm.contactNumber" />
+            <el-form-item label="联系电话:" prop="contactNumber">
+              <el-input v-if="$route.path!=='/enterprise/see'" v-model="addForm.contactNumber" />
+              <span v-else>{{ addForm.contactNumber }}</span>
             </el-form-item>
-            <el-form-item label="营业执照" prop="businessLicenseId">
+            <el-form-item label="营业执照:" prop="businessLicenseId">
               <el-upload
+                v-if="$route.path!=='/enterprise/see'"
                 class="upload-demo"
                 :on-preview="previewUpload"
                 :before-upload="beforeUpload"
@@ -53,13 +60,43 @@
                 >{{ addForm.businessLicenseUrl ? '已上传' : '上传文件' }}</el-button>
                 <div slot="tip" class="el-upload__tip">支持扩展名：.png .jpg .jpeg，文件大小不得超过5M</div>
               </el-upload>
+              <el-image v-else style="width: 250px; height: 200px" :src="addForm.businessLicenseUrl" fit="cover" />
             </el-form-item>
           </el-form>
           <el-image ref="image" style="display: none;" :src="url" :preview-src-list="srcList" />
         </div>
       </div>
+      <div v-if="$route.path==='/enterprise/see'" class="form-container">
+        <div class="title">租赁记录</div>
+        <div class="form">
+          <template>
+            <el-table :data="addForm.rent" header-row-class-name="tableBox">
+              <el-table-column type="index" width="50" label="序号" />
+              <el-table-column label="租赁楼宇" width="320" prop="name" />
+              <el-table-column label="租赁起始时间" prop="startTime">
+                <template slot-scope="scope">
+                  <p>{{ time(scope.row) }}</p>
+                </template>
+              </el-table-column>
+              <el-table-column label="租赁合同" width="200" prop="contractName" />
+              <el-table-column label="录入时间" width="250" prop="createTime" />
+              <el-table-column label="合同状态">
+                <template slot-scope="scope">
+                  <p>{{ status(scope.row.status) }}</p>
+                </template>
+              </el-table-column>
+              <el-table-column label="操作" width="180">
+                <template #default="scope">
+                  <el-button size="mini" type="text" @click="quitEnterpriseContract(scope.row.id)">退租</el-button>
+                  <el-button size="mini" type="text" @click="delEnterpriseContract(scope.row.id)">删除</el-button>
+                </template>
+              </el-table-column>
+            </el-table>
+          </template>
+        </div>
+      </div>
     </main>
-    <footer class="add-footer">
+    <footer v-if="$route.path!=='/enterprise/see'" class="add-footer">
       <div class="btn-container">
         <el-button @click="resetForm">重置</el-button>
         <el-button type="primary" @click="submitForm">确定</el-button>
@@ -69,8 +106,15 @@
 </template>
 
 <script>
-// 导入获取企业行业 添加企业 查看企业 编辑企业 接口
-import { searchEnterPriseIndustryAPI, addEnterpriseAPI, searchEnterpriseAPI, updatEnterpriseAPI } from '@/api/enterprise'
+// 导入获取企业行业 添加企业 查看企业 编辑企业 删除合同 退租租赁合同 接口
+import {
+  searchEnterPriseIndustryAPI,
+  addEnterpriseAPI,
+  searchEnterpriseAPI,
+  updatEnterpriseAPI,
+  delEnterpriseContractAPI,
+  quitEnterpriseContractAPI
+} from '@/api/enterprise'
 // 导入上传图片接口
 import { uploadAPI } from '@/api/commit'
 
@@ -112,12 +156,64 @@ export default {
     pageTitle() {
       if (this.$route.path === '/enterprise/add') return '添加企业'
       if (this.$route.path === '/enterprise/edit') return '编辑企业'
+      if (this.$route.path === '/enterprise/see') return '查看企业'
+    },
+    industry() {
+      let title = ''
+      if (this.options.length > 0) {
+        title = this.options.filter(item => item.industryCode === this.addForm.industryCode)[0]
+        if (title) return title.industryName
+      }
+      return ''
     }
   },
   created() {
     this.searchEnterPriseIndustry()
   },
   methods: {
+    // 退租合同处理
+    quitEnterpriseContract(id) {
+      this.$confirm('确定要退企业租赁吗？', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(async () => {
+        await quitEnterpriseContractAPI(id)
+        this.$message({
+          type: 'success',
+          message: '操作成功!'
+        })
+        this.searchEnterPriseIndustry()
+      })
+    },
+    // 删除合同处理
+    delEnterpriseContract(id) {
+      this.$confirm('确定要删除企业租赁合同记录吗？', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(async () => {
+        await delEnterpriseContractAPI(id)
+        this.$message({
+          type: 'success',
+          message: '删除成功!'
+        })
+        this.searchEnterPriseIndustry()
+      })
+    },
+    // 处理返回时间字符串
+    time(row) {
+      // console.log()
+      return row.startTime + '-' + row.endTime
+    },
+    // 返回合同状态字符串
+    status(statu) {
+      if (statu === 0) return '待生效'
+      if (statu === 1) return '生效中'
+      if (statu === 2) return '已到期'
+      if (statu === 3) return '已退租'
+      return statu
+    },
     // 删除文件操作
     removeImage() {
       this.addForm.businessLicenseId = ''
@@ -179,6 +275,11 @@ export default {
         this.url = data.businessLicenseUrl
         this.srcList.push(data.businessLicenseUrl)
         // console.log(data)
+      }
+      // 调用查看企业信息接口获取数据
+      if (this.$route.path === '/enterprise/see') {
+        const { data } = await searchEnterpriseAPI(this.$route.query.id)
+        this.addForm = data
       }
     },
     submitForm() {
