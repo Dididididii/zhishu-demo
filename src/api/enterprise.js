@@ -37,3 +37,8 @@ export const updatEnterpriseAPI = (data) => {
     data,
   });
 };
+
+// 删除企业
+export const delEnterpriseAPI = (id) => {
+  return request.delete(`/park/enterprise/${id}`);
+};

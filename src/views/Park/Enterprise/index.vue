@@ -21,7 +21,7 @@
             <el-button size="mini" type="text">添加合同</el-button>
             <el-button size="mini" type="text">查看</el-button>
             <el-button size="mini" type="text" @click="$router.push({path:'/enterprise/edit',query:{id:scope.row.id}})">编辑</el-button>
-            <el-button size="mini" type="text">删除</el-button>
+            <el-button size="mini" type="text" @click="removeEnterprise(scope.row.id)">删除</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -72,8 +72,8 @@
 </style>
 
 <script>
-// 导入获取企业管理列表接口
-import { getEnterpriseListAPI } from '@/api/enterprise'
+// 导入获取 企业管理列表 删除企业接口
+import { getEnterpriseListAPI, delEnterpriseAPI } from '@/api/enterprise'
 
 export default {
   name: 'Building',
@@ -116,6 +116,21 @@ export default {
     searchEnterprise() {
       this.params.page = 1
       this.getEnterpriseList()
+    },
+    // 删除企业
+    removeEnterprise(id) {
+      this.$confirm('是否确认删除当前企业?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(async () => {
+        await delEnterpriseAPI(id)
+        this.$message({
+          type: 'success',
+          message: '删除成功!'
+        })
+        this.getEnterpriseList()
+      })
     }
   }
 }
