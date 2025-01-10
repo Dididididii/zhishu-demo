@@ -25,7 +25,7 @@
               <el-table-column label="操作" width="180">
                 <template #default="scope">
                   <el-button size="mini" type="text" :disabled="scope.row.status ===3" @click="surrenderTenancy(scope.row)">退租</el-button>
-                  <el-button size="mini" type="text" @click="delTenancy(scope.row)">删除</el-button>
+                  <el-button size="mini" type="text" :disabled="scope.row.status !==3" @click="delTenancy(scope.row)">删除</el-button>
                 </template>
               </el-table-column>
             </el-table>
@@ -55,7 +55,7 @@
         @current-change="handleCurrentChange"
       />
     </div>
-    <el-dialog title="添加合同" :visible="rentDialogVisible" width="580px" @close="closeDialog">
+    <el-dialog title="添加合同" :visible="rentDialogVisible" width="580px" destroy-on-close @close="closeDialog">
       <!-- 表单区域 -->
       <div class="form-container">
         <el-form ref="addForm" :model="rentForm" :rules="rentRules" label-position="top">
@@ -76,7 +76,14 @@
             />
           </el-form-item>
           <el-form-item label="租赁合同" prop="contractId">
-            <el-upload action="#" :limit="1" :before-upload="beforeUpload" :http-request="loadWPS" :on-remove="onRemove">
+            <el-upload
+              :file-list="fileList"
+              action="#"
+              :limit="1"
+              :before-upload="beforeUpload"
+              :http-request="loadWPS"
+              :on-remove="onRemove"
+            >
               <el-button size="small" type="primary" plain>上传合同文件</el-button>
               <div slot="tip" class="el-upload__tip">支持扩展名：.doc .docx .pdf, 文件大小不超过5M</div>
             </el-upload>
@@ -143,6 +150,7 @@ export default {
   name: 'Building',
   data() {
     return {
+      fileList: [],
       //   日期选择器设置从今天开始选
       pickerOptions: {
         disabledDate(time) {
@@ -342,6 +350,7 @@ export default {
         await addEnterpriseRentAPI(this.rentForm)
         this.$message.success('合同添加成功.')
         this.closeDialog()
+        this.getEnterpriseList()
       })
     },
     // 上传文件前的处理
