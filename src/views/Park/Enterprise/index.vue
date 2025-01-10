@@ -11,7 +11,26 @@
     </div>
     <!-- 表格区域 -->
     <div class="table">
-      <el-table style="width: 100%" :data="enterpriseList">
+      <el-table style="width: 100%" :data="enterpriseList" @expand-change="onabortEnterprise">
+        <el-table-column type="expand">
+          <template slot-scope="props">
+            <el-table :data="props.row.renList">
+              <el-table-column label="租赁楼宇" width="320" prop="buildingName" />
+              <el-table-column label="租赁起始时间" prop="startTime" />
+              <el-table-column label="合同状态" prop="status">
+                <template #default="scope">
+                  <el-tag :type="formatInfoType(scope.row.status)">{{ formartStatus(scope.row.status) }}</el-tag>
+                </template>
+              </el-table-column>
+              <el-table-column label="操作" width="180">
+                <template #default="scope">
+                  <el-button size="mini" type="text" :disabled="scope.row.status ===3" @click="surrenderTenancy(scope.row)">退租</el-button>
+                  <el-button size="mini" type="text" @click="delTenancy(scope.row)">删除</el-button>
+                </template>
+              </el-table-column>
+            </el-table>
+          </template>
+        </el-table-column>
         <el-table-column type="index" label="序号" :index="indexMethod" />
         <el-table-column label="企业名称" width="320" prop="name" />
         <el-table-column label="联系人" prop="contact" />
@@ -106,8 +125,15 @@
 </style>
 
 <script>
-// 导入获取 企业管理列表 删除企业 添加/续租企业的租赁合同接口
-import { getEnterpriseListAPI, delEnterpriseAPI, addEnterpriseRentAPI } from '@/api/enterprise'
+// 导入获取 企业管理列表 删除企业 添加/续租企业的租赁合同 企业租赁信息列表-展开查看 退租租赁合同 删除合同接口
+import {
+  getEnterpriseListAPI,
+  delEnterpriseAPI,
+  addEnterpriseRentAPI,
+  onabortEnterpriseAPI,
+  surrenderTenancyAPI,
+  delTenancyAPI
+} from '@/api/enterprise'
 // 导入查询可租赁楼宇接口 searchBuildingAPI
 import { searchBuildingAPI } from '@/api/ren'
 // 导入上传接口
@@ -158,6 +184,92 @@ export default {
     this.getEnterpriseList()
   },
   methods: {
+    // 删除合同
+    delTenancy(row) {
+      this.$confirm('确定要删除该合同吗？', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(async () => {
+        await delTenancyAPI(row.id)
+        this.$message({
+          type: 'success',
+          message: '操作成功!'
+        })
+        this.getEnterpriseList()
+        // this.enterpriseList.forEach(item => {
+        //   item.renList.find((val, index) => {
+        //     if (val.id === row.id) {
+        //       item.renList.splice(index, 1)
+        //       // console.log(item)
+        //     }
+        //   })
+        // })
+        // console.log(this.enterpriseList.map(item => item.id === row.id))
+        // this.enterpriseList.
+        // console.log(row)
+      })
+    },
+    // 退租
+    surrenderTenancy(row) {
+      this.$confirm('确定要退租吗？', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(async () => {
+        await surrenderTenancyAPI(row.id)
+        this.$message({
+          type: 'success',
+          message: '操作成功!'
+        })
+        // eslint-disable-next-line require-atomic-updates
+        // row.status = 3
+        this.getEnterpriseList()
+      })
+    },
+    // 格式化tag类型
+    formatInfoType(status) {
+      const MAP = {
+        0: 'warning',
+        1: 'success',
+        2: 'info',
+        3: 'danger'
+      }
+      // return 格式化之后的中文显示
+      return MAP[status]
+    },
+    // 格式化status
+    formartStatus(type) {
+      const TYPEMAP = {
+        0: '待生效',
+        1: '生效中',
+        2: '已到期',
+        3: '已退租'
+      }
+      return TYPEMAP[type]
+    },
+    // 展开表格发送请求
+    async onabortEnterprise(row, expandedRows) {
+      const isOpen = expandedRows.find(item => item.id === row.id)
+      if (isOpen) {
+        // const test = this.enterpriseList.find(item => item.id === row.id)
+        const res = await onabortEnterpriseAPI(row.id)
+        // eslint-disable-next-line require-atomic-updates
+        row.renList = res.data
+
+        // if (test) {
+        //   const res = await onabortEnterpriseAPI(row.id)
+        //   // this.onabortList.push()
+        //   test.rows = res.data
+        // }
+        // console.log(row, expandedRows)
+      }
+
+      // const res = await onabortEnterpriseAPI(row.id)
+      // // this.onabortList.push()
+      // test[0].rows = res.data
+      // console.log(test)
+    },
     // 关闭合同窗口
     closeDialog() {
       this.rentDialogVisible = false
@@ -170,7 +282,12 @@ export default {
     // 调用接口获取企业管理列表数据
     async getEnterpriseList() {
       const res = await getEnterpriseListAPI(this.params)
-      this.enterpriseList = res.data.rows
+      this.enterpriseList = res.data.rows.map(item => {
+        return {
+          ...item,
+          renList: []
+        }
+      })
       this.total = res.data.total
     },
     // 页面数量改变

@@ -61,3 +61,18 @@ export const delEnterpriseContractAPI = (id) => {
 export const quitEnterpriseContractAPI = (id) => {
   return request.put(`/park/enterprise/rent/${id}`);
 };
+
+// 企业租赁信息列表-展开查看
+export const onabortEnterpriseAPI = (id) => {
+  return request.get(`/park/enterprise/rent/${id}`);
+};
+
+// 退租租赁合同
+export const surrenderTenancyAPI = (id) => {
+  return request.put(`/park/enterprise/rent/${id}`);
+};
+
+// 删除合同
+export const delTenancyAPI = (id) => {
+  return request.delete(`/park/enterprise/rent/${id}`);
+};
