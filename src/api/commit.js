@@ -8,3 +8,11 @@ export const uploadAPI = (data) => {
     data,
   });
 };
+
+/**
+ * 下载接口
+ *
+ */
+export const downLoadAPI = (id) => {
+  return request.post(`/download/${id}`);
+};

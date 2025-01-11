@@ -16,7 +16,11 @@
           <template slot-scope="props">
             <el-table :data="props.row.renList">
               <el-table-column label="租赁楼宇" width="320" prop="buildingName" />
-              <el-table-column label="租赁起始时间" prop="startTime" />
+              <el-table-column label="租赁起始时间" prop="startTime">
+                <template #default="scope">
+                  <span>{{ `${scope.row.startTime}至${scope.row.endTime}` }}</span>
+                </template>
+              </el-table-column>
               <el-table-column label="合同状态" prop="status">
                 <template #default="scope">
                   <el-tag :type="formatInfoType(scope.row.status)">{{ formartStatus(scope.row.status) }}</el-tag>

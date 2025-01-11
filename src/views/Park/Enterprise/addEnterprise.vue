@@ -78,7 +78,11 @@
                   <p>{{ time(scope.row) }}</p>
                 </template>
               </el-table-column>
-              <el-table-column label="租赁合同" width="200" prop="contractName" />
+              <el-table-column label="租赁合同" width="200" prop="contractName">
+                <template #default="scope">
+                  <el-link type="primary" :underline="false" :href="reViewUrl+scope.row.contractUrl">{{ scope.row.contractName }}</el-link>
+                </template>
+              </el-table-column>
               <el-table-column label="录入时间" width="250" prop="createTime" />
               <el-table-column label="合同状态">
                 <template slot-scope="scope">
@@ -87,8 +91,9 @@
               </el-table-column>
               <el-table-column label="操作" width="180">
                 <template #default="scope">
-                  <el-button size="mini" type="text" @click="quitEnterpriseContract(scope.row.id)">退租</el-button>
-                  <el-button size="mini" type="text" @click="delEnterpriseContract(scope.row.id)">删除</el-button>
+                  <el-link type="primary" :underline="false" :href="scope.row.contractUrl">合同下载</el-link>
+                  <!-- <el-button size="mini" type="text" @click="quitEnterpriseContract(scope.row.id)">退租</el-button>
+                  <el-button size="mini" type="text" @click="delEnterpriseContract(scope.row.id)">删除</el-button>-->
                 </template>
               </el-table-column>
             </el-table>
@@ -115,12 +120,13 @@ import {
   delEnterpriseContractAPI,
   quitEnterpriseContractAPI
 } from '@/api/enterprise'
-// 导入上传图片接口
+// 导入上传图片 下载接口
 import { uploadAPI } from '@/api/commit'
 
 export default {
   data() {
     return {
+      reViewUrl: 'https://view.officeapps.live.com/op/view.aspx?src=',
       fileList: [],
       url: '',
       srcList: [],
