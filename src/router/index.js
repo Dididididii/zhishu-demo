@@ -11,6 +11,14 @@ import Layout from "@/layout";
 const linkList = ["/login", "/404"];
 
 export const routes = [
+  // 员工管理处理页面
+  {
+    path: "/sys/role/add",
+    // permission: "parking:addcard",
+    component: () => import("@/views/System/Role/addRole.vue"),
+    meta: { title: "添加角色" },
+    hidden: true,
+  },
   // 企业管理处理页面
   {
     path: "/enterprise/add",
