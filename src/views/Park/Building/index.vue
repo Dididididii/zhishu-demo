@@ -34,7 +34,7 @@
       </div>
       <!-- 添加楼宇 -->
       <!-- 添加楼宇弹框 -->
-      <el-dialog title="添加楼宇" :visible="dialogVisible" width="580px" @close="closeDialog">
+      <el-dialog :title="addForm.id?'编辑楼宇':'添加楼宇'" :visible="dialogVisible" width="580px" @close="closeDialog">
         <el-form ref="addForm" :model="addForm" :rules="addFormRules">
           <el-form-item label="楼宇名称" prop="name">
             <el-input v-model="addForm.name" />
