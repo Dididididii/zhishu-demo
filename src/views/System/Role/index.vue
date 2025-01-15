@@ -18,13 +18,13 @@
               <svg-icon icon-class="more" />
             </span>
             <el-dropdown-menu slot="dropdown">
-              <el-dropdown-item command="edit">编辑角色</el-dropdown-item>
-              <el-dropdown-item command="del">删除</el-dropdown-item>
+              <el-dropdown-item v-permission="'sys:role:add_edit'" command="edit">编辑角色</el-dropdown-item>
+              <el-dropdown-item v-permission="'sys:role:remove'" command="del">删除</el-dropdown-item>
             </el-dropdown-menu>
           </el-dropdown>
         </div>
       </div>
-      <el-button class="addBtn" size="mini" @click="$router.push('/sys/role/add')">添加角色</el-button>
+      <el-button v-permission="'sys:role:add_edit'" class="addBtn" size="mini" @click="$router.push('/sys/role/add')">添加角色</el-button>
     </div>
 
     <div class="right-wrapper">

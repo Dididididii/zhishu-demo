@@ -36,6 +36,7 @@ export default {
     logout() {
       removeToken()
       this.$store.commit('user/updateToken', '')
+      this.$store.commit('menu/clearMenuList')
       this.$router.push(`/login?redirect=${this.$route.fullPath}`)
     }
   }

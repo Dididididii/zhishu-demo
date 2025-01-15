@@ -18,6 +18,9 @@ Vue.use(ElementUI);
 
 Vue.config.productionTip = false;
 
+// 导入组件化
+import "@/directive";
+
 // vue实例化
 new Vue({
   el: "#app",
