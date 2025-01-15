@@ -73,6 +73,14 @@ const getRoutes = (firstPermissions, secondPermissions, asyncRoutes) => {
 };
 
 export const routes = [
+  // 派单处理页面
+  {
+    path: "/warn/detail",
+    // permission: "parking:addcard",
+    component: () => import("@/views/Rod/RodWarn/addWarn.vue"),
+    meta: { title: "派单处理" },
+    hidden: true,
+  },
   // 员工管理处理页面
   {
     path: "/sys/role/add",
